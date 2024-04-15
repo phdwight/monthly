@@ -3,7 +3,7 @@ from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from abc import ABC, abstractmethod
-
+from decimal import Decimal, getcontext
 
 class CalculationStrategy(ABC):
     @abstractmethod
@@ -93,18 +93,22 @@ class ReadingDistributor:
         print(f"{self.data['current_month_year']}:")
         for name in self.data["readings"][self.data["current_month_year"]]:
             print(
-                f"  {name}: Consumption = {self.data['consumption'][name]}, Percentage = {self.data['percentages'][name]:.2f}%, Amount = ${self.data['distribution'][name]:.2f}"
+                f"  {name}: Consumption = {self.data['consumption'][name]}, Percentage = {self.data['percentages'][name]:.2f}%, Amount = ₱{self.data['distribution'][name]:.2f}"
             )
 
     def calculate_adjusted(self):
-        self.data["adjusted_percentages"] = (
-            AdjustedPercentageCalculationStrategy().calculate(self.data)
-        )
-        self.data[
-            "adjusted_distribution"
-        ] = DistributionCalculationStrategy().calculate(
-            {**self.data, "percentages": self.data["adjusted_percentages"]}
-        )
+        getcontext().prec = 6  # set the precision you need
+        meter1_percentage = Decimal(self.data["percentages"].pop("Meter1", 0))
+        adjustment_percentage = meter1_percentage / Decimal(len(self.data["percentages"]))
+        self.data["adjusted_percentages"] = {
+            name: float(Decimal(percentage) + adjustment_percentage)
+            for name, percentage in self.data["percentages"].items()
+        }
+        self.data["adjusted_distribution"] = {
+            name: float((Decimal(percentage) / 100) * Decimal(self.data["amounts"][self.data["current_month_year"]]))
+            for name, percentage in self.data["adjusted_percentages"].items()
+        }
+        self.data["adjusted_distribution"]["Meter1"] = 0
 
     def display_adjusted(self):
         print(f"Adjusted {self.data['current_month_year']}:")
@@ -112,8 +116,22 @@ class ReadingDistributor:
             if name == "Meter1":
                 continue
             print(
-                f"  {name}: Consumption = {self.data['consumption'][name]}, Adjusted Percentage = {self.data['adjusted_percentages'][name]:.2f}%, Adjusted Amount = ${self.data['adjusted_distribution'][name]:.2f}"
+                f"  {name}: Consumption = {self.data['consumption'][name]}, Adjusted Percentage = {self.data['adjusted_percentages'][name]:.2f}%, Adjusted Amount = ₱{self.data['adjusted_distribution'][name]:.2f}"
             )
+
+    def output_to_file(self):
+        current_month_year = self.data["current_month_year"].replace(" ", "_")
+        filename = f"{current_month_year}.txt"
+        with open(filename, "w") as f:
+            f.write(f"Adjusted {self.data['current_month_year']}:\n")
+            for name in self.data["adjusted_percentages"]:
+                if name == "Meter1":
+                    continue
+                f.write(
+                    f"  {name}: Consumption = {self.data['consumption'][name]}, Adjusted Percentage = {self.data['adjusted_percentages'][name]:.2f}%, Adjusted Amount = ₱{self.data['adjusted_distribution'][name]:.2f}\n"
+                )
+            total_adjusted_amount = sum(value for key, value in self.data['adjusted_distribution'].items() if key != "Meter1")
+            f.write(f"Total Adjusted Amount = ₱{total_adjusted_amount:.2f}\n")
 
 
 # Example usage
@@ -122,3 +140,4 @@ distributor.calculate()
 distributor.display()
 distributor.calculate_adjusted()
 distributor.display_adjusted()
+distributor.output_to_file()
