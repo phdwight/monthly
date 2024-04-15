@@ -13,16 +13,18 @@ class CalculationStrategy(ABC):
 
 class AdjustedPercentageCalculationStrategy(CalculationStrategy):
     def calculate(self, data):
-        consumption_without_meter1 = {
-            k: v for k, v in data["consumption"].items() if k != "Meter1"
+        # Get the name of the first meter
+        first_meter = list(data["consumption"].keys())[0]
+        consumption_without_first_meter = {
+            k: v for k, v in data["consumption"].items() if k != first_meter
         }
-        total_consumption = sum(consumption_without_meter1.values())
+        total_consumption = sum(consumption_without_first_meter.values())
         percentages = {
             name: (consumption / total_consumption) * 100
-            for name, consumption in consumption_without_meter1.items()
+            for name, consumption in consumption_without_first_meter.items()
         }
-        meter1_percentage = data["percentages"].get("Meter1", 0)
-        adjustment = meter1_percentage / len(percentages)
+        first_meter_percentage = data["percentages"].get(first_meter, 0)
+        adjustment = first_meter_percentage / len(percentages)
         return {
             name: percentage + adjustment for name, percentage in percentages.items()
         }
@@ -98,8 +100,10 @@ class ReadingDistributor:
 
     def calculate_adjusted(self):
         getcontext().prec = 6  # set the precision you need
-        meter1_percentage = Decimal(self.data["percentages"].pop("Meter1", 0))
-        adjustment_percentage = meter1_percentage / Decimal(len(self.data["percentages"]))
+        # Get the name of the first meter
+        first_meter = list(self.data["percentages"].keys())[0]
+        first_meter_percentage = Decimal(self.data["percentages"].pop(first_meter, 0))
+        adjustment_percentage = first_meter_percentage / Decimal(len(self.data["percentages"]))
         self.data["adjusted_percentages"] = {
             name: float(Decimal(percentage) + adjustment_percentage)
             for name, percentage in self.data["percentages"].items()
@@ -108,7 +112,7 @@ class ReadingDistributor:
             name: float((Decimal(percentage) / 100) * Decimal(self.data["amounts"][self.data["current_month_year"]]))
             for name, percentage in self.data["adjusted_percentages"].items()
         }
-        self.data["adjusted_distribution"]["Meter1"] = 0
+        self.data["adjusted_distribution"][first_meter] = 0
 
     def display_adjusted(self):
         print(f"Adjusted {self.data['current_month_year']}:")

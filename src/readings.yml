@@ -1,21 +1,21 @@
 'March 2024':
   readings:
-    Meter1: 38372
-    Meter2: 21389
-    Meter3: 23576
-    Meter4: 10330
+    Papa: 38372
+    Jack: 21389
+    Ian: 23576
+    Ajin: 10330
   amount: 3654.53
 'February 2024':
   readings:
-    Meter1: 37944
-    Meter2: 19538
-    Meter3: 22983
-    Meter4: 10029
+    Papa: 37944
+    Jack: 19538
+    Ian: 22983
+    Ajin: 10029
   amount: 4113.64
 'January 2024':
   readings:
-    Meter1: 10
-    Meter2: 10
-    Meter3: 10
-    Meter4: 10
+    Papa: 10
+    Jack: 10
+    Ian: 10
+    Ajin: 10
   amount: 1000
