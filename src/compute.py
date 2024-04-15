@@ -4,6 +4,8 @@ from dateutil.relativedelta import relativedelta
 from datetime import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal, getcontext
+from pathlib import Path
+
 
 class CalculationStrategy(ABC):
     @abstractmethod
@@ -61,15 +63,18 @@ class DistributionCalculationStrategy(CalculationStrategy):
 
 class ReadingDistributor:
     def __init__(self, yaml_file):
-        with open(yaml_file, "r") as file:
-            data = yaml.safe_load(file)
-        sorted_data = OrderedDict(sorted(data.items(), reverse=True))
+        data = yaml.safe_load(Path(yaml_file).read_text())
+        sorted_data = dict(sorted(data.items(), reverse=True))
         readings = {
             month_year: readings["readings"]
             for month_year, readings in sorted_data.items()
         }
         amounts = {
             month_year: readings["amount"]
+            for month_year, readings in sorted_data.items()
+        }
+        water = {
+            month_year: readings["water"]
             for month_year, readings in sorted_data.items()
         }
         current_month_year = list(readings.keys())[0]
@@ -79,12 +84,16 @@ class ReadingDistributor:
         self.data = {
             "readings": readings,
             "amounts": amounts,
+            "water": water,
             "current_month_year": current_month_year,
             "previous_month_year": previous_month_year,
         }
         self.consumption_strategy = ConsumptionCalculationStrategy()
         self.percentage_strategy = PercentageCalculationStrategy()
         self.distribution_strategy = DistributionCalculationStrategy()
+        self.first_meter = list(
+            self.data["readings"][self.data["current_month_year"]].keys()
+        )[0]
 
     def calculate(self):
         self.data["consumption"] = self.consumption_strategy.calculate(self.data)
@@ -101,47 +110,66 @@ class ReadingDistributor:
     def calculate_adjusted(self):
         getcontext().prec = 6  # set the precision you need
         # Get the name of the first meter
-        first_meter = list(self.data["percentages"].keys())[0]
-        first_meter_percentage = Decimal(self.data["percentages"].pop(first_meter, 0))
-        adjustment_percentage = first_meter_percentage / Decimal(len(self.data["percentages"]))
+        first_meter_percentage = self.data["percentages"].pop(self.first_meter, 0)
+        adjustment_percentage = first_meter_percentage / len(self.data["percentages"])
         self.data["adjusted_percentages"] = {
-            name: float(Decimal(percentage) + adjustment_percentage)
+            name: float(Decimal(percentage) + Decimal(adjustment_percentage))
             for name, percentage in self.data["percentages"].items()
         }
         self.data["adjusted_distribution"] = {
-            name: float((Decimal(percentage) / 100) * Decimal(self.data["amounts"][self.data["current_month_year"]]))
+            name: float(
+                (Decimal(percentage) / 100)
+                * Decimal(self.data["amounts"][self.data["current_month_year"]])
+            )
             for name, percentage in self.data["adjusted_percentages"].items()
         }
-        self.data["adjusted_distribution"][first_meter] = 0
+        self.data["adjusted_distribution"][self.first_meter] = 0
+
+        # Distribute the 'water' amount equally among the last three meters
+        water_amount = Decimal(self.data["water"][self.data["current_month_year"]])
+        water_distribution = float(
+            water_amount / Decimal(len(self.data["percentages"]))
+        )
+        for name in self.data["percentages"]:
+            self.data["adjusted_distribution"][name] += water_distribution
 
     def display_adjusted(self):
-        print(f"Adjusted {self.data['current_month_year']}:")
-        for name in self.data["adjusted_percentages"]:
-            if name == "Meter1":
+        output = []
+        water_amount = self.data["water"][self.data["current_month_year"]]
+        water_distribution = water_amount / len(self.data["percentages"])
+        for name, percentage in self.data["adjusted_percentages"].items():
+            if name == self.first_meter:
                 continue
-            print(
-                f"  {name}: Consumption = {self.data['consumption'][name]}, Adjusted Percentage = {self.data['adjusted_percentages'][name]:.2f}%, Adjusted Amount = ₱{self.data['adjusted_distribution'][name]:.2f}"
+            output.append(
+                f"  {name}: Adjusted Percentage = {percentage:.2f}%, Adjusted Reading = {self.data['consumption'][name]}, Water Amount = ₱{water_distribution:.2f}, Total = ₱{self.data['adjusted_distribution'][name]:.2f}"
             )
+        return "\n".join(output)
 
     def output_to_file(self):
         current_month_year = self.data["current_month_year"].replace(" ", "_")
         filename = f"{current_month_year}.txt"
-        with open(filename, "w") as f:
-            f.write(f"Adjusted {self.data['current_month_year']}:\n")
-            for name in self.data["adjusted_percentages"]:
-                if name == "Meter1":
-                    continue
-                f.write(
-                    f"  {name}: Consumption = {self.data['consumption'][name]}, Adjusted Percentage = {self.data['adjusted_percentages'][name]:.2f}%, Adjusted Amount = ₱{self.data['adjusted_distribution'][name]:.2f}\n"
-                )
-            total_adjusted_amount = sum(value for key, value in self.data['adjusted_distribution'].items() if key != "Meter1")
-            f.write(f"Total Adjusted Amount = ₱{total_adjusted_amount:.2f}\n")
+        output = [f"Adjusted {self.data['current_month_year']}:"]
+        water_amount = self.data["water"][self.data["current_month_year"]]
+        water_distribution = water_amount / len(self.data["percentages"])
+        for name, percentage in self.data["adjusted_percentages"].items():
+            if name == self.first_meter:
+                continue
+            output.append(
+                f"  {name}: Adjusted Percentage = {percentage:.2f}%, Adjusted Reading = {self.data['consumption'][name]}, Water Amount = ₱{water_distribution:.2f}, Total = ₱{self.data['adjusted_distribution'][name]:.2f}"
+            )
+        total_adjusted_amount = sum(
+            value
+            for key, value in self.data["adjusted_distribution"].items()
+            if key != self.first_meter
+        )
+        output.append(f"Total Adjusted Amount = ₱{total_adjusted_amount:.2f}")
+        Path(filename).write_text("\n".join(output))
 
 
 # Example usage
 distributor = ReadingDistributor("src/readings.yml")
 distributor.calculate()
-distributor.display()
+print(distributor.display())
 distributor.calculate_adjusted()
-distributor.display_adjusted()
+print(distributor.display_adjusted())
 distributor.output_to_file()

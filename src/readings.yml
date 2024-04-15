@@ -5,6 +5,7 @@
     Ian: 23576
     Ajin: 10330
   amount: 3654.53
+  water: 418.97
 'February 2024':
   readings:
     Papa: 37944
@@ -12,6 +13,7 @@
     Ian: 22983
     Ajin: 10029
   amount: 4113.64
+  water: 1000.0
 'January 2024':
   readings:
     Papa: 10
@@ -19,3 +21,4 @@
     Ian: 10
     Ajin: 10
   amount: 1000
+  water: 1000.0
