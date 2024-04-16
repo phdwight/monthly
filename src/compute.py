@@ -1,4 +1,5 @@
 import yaml
+import csv
 from collections import OrderedDict
 from dateutil.relativedelta import relativedelta
 from datetime import datetime
@@ -166,6 +167,27 @@ class ReadingDistributor:
         output.append(f"Total Adjusted Amount = ₱{total_adjusted_amount:.2f}")
         Path(filename).write_text("\n".join(output))
 
+    def output_to_csv(self):
+        current_month_year = self.data["current_month_year"].replace(" ", "_")
+        filename = f"{current_month_year}.csv"
+        with open(filename, 'w', newline='') as csvfile:
+            fieldnames = ['Name', 'Adjusted Percentage', 'Reading', 'Water Amount', 'Total']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            water_amount = self.data["water"][self.data["current_month_year"]]
+            water_distribution = water_amount / len(self.data["percentages"])
+            for name, percentage in self.data["adjusted_percentages"].items():
+                if name == self.first_meter:
+                    continue
+                writer.writerow({
+                    'Name': name,
+                    'Adjusted Percentage': f"{percentage:.2f}%",
+                    'Reading': self.data['consumption'][name],
+                    'Water Amount': f"₱{water_distribution:.2f}",
+                    'Total': f"₱{self.data['adjusted_distribution'][name]:.2f}"
+                })
+
 
 # Example usage
 distributor = ReadingDistributor("src/readings.yml")
@@ -174,3 +196,4 @@ distributor.display()
 distributor.calculate_adjusted()
 print(distributor.display_adjusted())
 distributor.output_to_file()
+distributor.output_to_csv()
