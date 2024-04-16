@@ -70,6 +70,7 @@ class ReadingDistributor:
             month_year: readings["readings"]
             for month_year, readings in sorted_data.items()
         }
+        self.names = list(readings.values())[0].keys()
         amounts = {
             month_year: readings["amount"]
             for month_year, readings in sorted_data.items()
@@ -78,7 +79,15 @@ class ReadingDistributor:
             month_year: readings["water"]
             for month_year, readings in sorted_data.items()
         }
-        sorted_keys = sorted(readings.keys(), reverse=True, key=lambda date: datetime.strptime(date, "%B %Y"))
+        internet = {
+            month_year: readings["internet"]
+            for month_year, readings in sorted_data.items()
+        }
+        sorted_keys = sorted(
+            readings.keys(),
+            reverse=True,
+            key=lambda date: datetime.strptime(date, "%B %Y"),
+        )
         current_month_year = sorted_keys[0]
         previous_month_year = (
             datetime.strptime(current_month_year, "%B %Y") - relativedelta(months=1)
@@ -87,6 +96,7 @@ class ReadingDistributor:
             "readings": readings,
             "amounts": amounts,
             "water": water,
+            "internet": internet,
             "current_month_year": current_month_year,
             "previous_month_year": previous_month_year,
         }
@@ -96,6 +106,38 @@ class ReadingDistributor:
         self.first_meter = list(
             self.data["readings"][self.data["current_month_year"]].keys()
         )[0]
+
+    def calculate_percentages(self, data):
+        total = sum(data.values())
+        return {name: (value / total) * 100 for name, value in data.items()}
+
+    def distribute_amount(self, data, amount):
+        return {name: (percentage / 100) * amount for name, percentage in data.items()}
+
+    def write_to_file(self, filename, data):
+        with open(filename, "w") as file:
+            file.write(data)
+
+    def create_filename(self, extension):
+        current_month_year = self.data["current_month_year"].replace(" ", "_")
+        return f"{current_month_year}.{extension}"
+
+    def calculate_total_amount(self, data):
+        return sum(value for value in data.values())
+
+    def calculate(self):
+        self.data["consumption"] = self.consumption_strategy.calculate(self.data)
+        self.data["percentages"] = self.calculate_percentages(self.data["consumption"])
+        self.data["distribution"] = self.distribute_amount(
+            self.data["percentages"],
+            self.data["amounts"][self.data["current_month_year"]],
+        )
+
+    def check_names(self):
+        # Check if the names are consistent across all months
+        for month, reading in self.data["readings"].items():
+            if set(reading.keys()) != set(self.names):
+                print(f"Warning: Names in {month} do not match initial names.")
 
     def calculate(self):
         self.data["consumption"] = self.consumption_strategy.calculate(self.data)
@@ -129,14 +171,25 @@ class ReadingDistributor:
 
         # Distribute the 'water' amount equally among the last three meters
         water_amount = Decimal(self.data["water"][self.data["current_month_year"]])
-        water_distribution = float(
-            water_amount / Decimal(len(self.data["percentages"]))
-        )
-        for name in self.data["percentages"]:
+        water_recipients = [name for name in self.data["percentages"] if name != "papa"]
+        water_distribution = float(water_amount / Decimal(len(water_recipients)))
+        for name in water_recipients:
             self.data["adjusted_distribution"][name] += water_distribution
 
+        # Distribute the 'internet' amount among specific users
+        internet_amount = Decimal(
+            self.data["internet"][self.data["current_month_year"]]
+        )
+        specific_users = ["Jack", "Ian"]  # replace with the names of the users
+        internet_distribution = float(
+            internet_amount / Decimal(len(specific_users))
+        )  # distribute to specific users only
+        for name in specific_users:
+            if name in self.data["adjusted_distribution"]:
+                self.data["adjusted_distribution"][name] += internet_distribution
+
     def display_adjusted(self):
-        output = [f"{self.data['current_month_year']}:"] 
+        output = [f"{self.data['current_month_year']}:"]
         water_amount = self.data["water"][self.data["current_month_year"]]
         water_distribution = water_amount / len(self.data["percentages"])
         for name, percentage in self.data["adjusted_percentages"].items():
@@ -148,58 +201,64 @@ class ReadingDistributor:
         return "\n".join(output)
 
     def output_to_file(self):
-        current_month_year = self.data["current_month_year"].replace(" ", "_")
-        filename = f"{current_month_year}.txt"
-        output = [f"Adjusted {self.data['current_month_year']}:"]
-        water_amount = self.data["water"][self.data["current_month_year"]]
-        water_distribution = water_amount / len(self.data["percentages"])
-        for name, percentage in self.data["adjusted_percentages"].items():
-            if name == self.first_meter:
-                continue
-            output.append(
-                f"  {name}: Adjusted Percentage = {percentage:.2f}%, Reading = {self.data['consumption'][name]}, Water Amount = ₱{water_distribution:.2f}, Total = ₱{self.data['adjusted_distribution'][name]:.2f}"
-            )
-        total_adjusted_amount = sum(
-            value
-            for key, value in self.data["adjusted_distribution"].items()
-            if key != self.first_meter
-        )
-        output.append(f"Total Adjusted Amount = ₱{total_adjusted_amount:.2f}")
-        Path(filename).write_text("\n".join(output))
+        filename = self.create_filename("txt")
+        output = self.display_adjusted()
+        self.write_to_file(filename, output)
 
     def output_to_csv(self):
-        current_month_year = self.data["current_month_year"].replace(" ", "_")
-        filename = f"{current_month_year}.csv"
-        with open(filename, 'w', newline='') as csvfile:
-            fieldnames = ['Name', 'Adjusted Percentage', 'Reading', 'Water Amount', 'Amount Without Water', 'Total']
+        filename = self.create_filename("csv")
+        with open(filename, "w", newline="") as csvfile:
+            fieldnames = [
+                "Name",
+                "Adjusted Percentage",
+                "Reading",
+                "Water",
+                "Internet",
+                "VECO",
+                "Total",
+            ]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
             writer.writeheader()
             water_amount = self.data["water"][self.data["current_month_year"]]
             water_distribution = water_amount / len(self.data["percentages"])
+            internet_amount = self.data["internet"][self.data["current_month_year"]]
+            internet_distribution = internet_amount / 2  # distribute to 2 users only
             total_amount = 0
             for name, percentage in self.data["adjusted_percentages"].items():
                 if name == self.first_meter:
                     continue
-                total = self.data['adjusted_distribution'][name]
-                total_without_water = total - water_distribution
+                total = self.data["adjusted_distribution"][name]
+                total_without_water_and_internet = total - water_distribution
+                if name in ["Jack", "Ian"]:  # distribute to Jack and Ian only
+                    total_without_water_and_internet -= internet_distribution
                 total_amount += total
-                writer.writerow({
-                    'Name': name,
-                    'Adjusted Percentage': f"{percentage:.2f}%",
-                    'Reading': self.data['consumption'][name],
-                    'Water Amount': f"₱{water_distribution:.2f}",
-                    'Electric': f"₱{total_without_water:.2f}",
-                    'Total': f"₱{total:.2f}"
-                })
-            writer.writerow({
-                'Name': 'Grand Total',
-                'Adjusted Percentage': '',
-                'Reading': '',
-                'Water Amount': '',
-                'Electric': '',
-                'Total': f"₱{total_amount:.2f}"
-            })
+                writer.writerow(
+                    {
+                        "Name": name,
+                        "Adjusted Percentage": f"{percentage:.2f}%",
+                        "Reading": self.data["consumption"][name],
+                        "Water": f"₱{water_distribution:.2f}",
+                        "Internet": (
+                            f"₱{internet_distribution:.2f}"
+                            if name in ["Jack", "Ian"]
+                            else ""
+                        ),
+                        "VECO": f"₱{total_without_water_and_internet:.2f}",
+                        "Total": f"₱{total:.2f}",
+                    }
+                )
+            writer.writerow(
+                {
+                    "Name": "Grand Total",
+                    "Adjusted Percentage": "",
+                    "Reading": "",
+                    "Water": "",
+                    "Internet": "",
+                    "VECO": "",
+                    "Total": f"₱{total_amount:.2f}",
+                }
+            )
 
 
 # Example usage
