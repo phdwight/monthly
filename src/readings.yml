@@ -1,21 +1,37 @@
+
+'April 2024':
+  readings:
+    Papa: 38890
+    Jack: 23572
+    Ian: 24987
+    Ajin: 10636
+  amount: 4000
+  water: 485.85
+  internet: 2000
 'March 2024':
   readings:
-    Meter1: 38372
-    Meter2: 21389
-    Meter3: 23576
-    Meter4: 10330
+    Papa: 38372
+    Jack: 21389
+    Ian: 23576
+    Ajin: 10330
   amount: 3654.53
+  water: 418.97
+  internet: 2000
 'February 2024':
   readings:
-    Meter1: 37944
-    Meter2: 19538
-    Meter3: 22983
-    Meter4: 10029
+    Papa: 37944
+    Jack: 19538
+    Ian: 22983
+    Ajin: 10029
   amount: 4113.64
+  water: 1000.0
+  internet: 2000
 'January 2024':
   readings:
-    Meter1: 10
-    Meter2: 10
-    Meter3: 10
-    Meter4: 10
+    Papa: 10
+    Jack: 10
+    Ian: 10
+    Ajin: 10
   amount: 1000
+  water: 1000.0
+  internet: 2000
