@@ -77,7 +77,8 @@ class ReadingDistributor:
             month_year: readings["water"]
             for month_year, readings in sorted_data.items()
         }
-        current_month_year = list(readings.keys())[0]
+        sorted_keys = sorted(readings.keys(), reverse=True, key=lambda date: datetime.strptime(date, "%B %Y"))
+        current_month_year = sorted_keys[0]
         previous_month_year = (
             datetime.strptime(current_month_year, "%B %Y") - relativedelta(months=1)
         ).strftime("%B %Y")
@@ -134,7 +135,7 @@ class ReadingDistributor:
             self.data["adjusted_distribution"][name] += water_distribution
 
     def display_adjusted(self):
-        output = []
+        output = [f"{self.data['current_month_year']}:"] 
         water_amount = self.data["water"][self.data["current_month_year"]]
         water_distribution = water_amount / len(self.data["percentages"])
         for name, percentage in self.data["adjusted_percentages"].items():
@@ -155,7 +156,7 @@ class ReadingDistributor:
             if name == self.first_meter:
                 continue
             output.append(
-                f"  {name}: Adjusted Percentage = {percentage:.2f}%, Adjusted Reading = {self.data['consumption'][name]}, Water Amount = ₱{water_distribution:.2f}, Total = ₱{self.data['adjusted_distribution'][name]:.2f}"
+                f"  {name}: Adjusted Percentage = {percentage:.2f}%, Reading = {self.data['consumption'][name]}, Water Amount = ₱{water_distribution:.2f}, Total = ₱{self.data['adjusted_distribution'][name]:.2f}"
             )
         total_adjusted_amount = sum(
             value
@@ -169,7 +170,7 @@ class ReadingDistributor:
 # Example usage
 distributor = ReadingDistributor("src/readings.yml")
 distributor.calculate()
-print(distributor.display())
+distributor.display()
 distributor.calculate_adjusted()
 print(distributor.display_adjusted())
 distributor.output_to_file()
