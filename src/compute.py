@@ -6,6 +6,20 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 from decimal import Decimal, getcontext
 from pathlib import Path
+from enum import Enum
+
+
+class SpecificUsers(Enum):
+    JACK = "Jack"
+    IAN = "Ian"
+
+
+class Constants:
+    PRECISION = 6
+    INTERNET_DISTRIBUTION_USERS = 2
+    DATE_FORMAT = "%B %Y"
+    FILE_EXTENSION_TXT = "txt"
+    FILE_EXTENSION_CSV = "csv"
 
 
 class CalculationStrategy(ABC):
@@ -152,7 +166,7 @@ class ReadingDistributor:
             )
 
     def calculate_adjusted(self):
-        getcontext().prec = 6  # set the precision you need
+        getcontext().prec = Constants.PRECISION
         # Get the name of the first meter
         first_meter_percentage = self.data["percentages"].pop(self.first_meter, 0)
         adjustment_percentage = first_meter_percentage / len(self.data["percentages"])
@@ -180,10 +194,10 @@ class ReadingDistributor:
         internet_amount = Decimal(
             self.data["internet"][self.data["current_month_year"]]
         )
-        specific_users = ["Jack", "Ian"]  # replace with the names of the users
+        specific_users = [SpecificUsers.JACK.value, SpecificUsers.IAN.value]
         internet_distribution = float(
-            internet_amount / Decimal(len(specific_users))
-        )  # distribute to specific users only
+            internet_amount / Decimal(Constants.INTERNET_DISTRIBUTION_USERS)
+        )
         for name in specific_users:
             if name in self.data["adjusted_distribution"]:
                 self.data["adjusted_distribution"][name] += internet_distribution
@@ -201,12 +215,12 @@ class ReadingDistributor:
         return "\n".join(output)
 
     def output_to_file(self):
-        filename = self.create_filename("txt")
+        filename = self.create_filename(Constants.FILE_EXTENSION_TXT)
         output = self.display_adjusted()
         self.write_to_file(filename, output)
 
     def output_to_csv(self):
-        filename = self.create_filename("csv")
+        filename = self.create_filename(Constants.FILE_EXTENSION_CSV)
         with open(filename, "w", newline="") as csvfile:
             fieldnames = [
                 "Name",
