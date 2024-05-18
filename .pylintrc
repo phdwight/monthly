@@ -1,0 +1,5 @@
+[DESIGN]
+min-public-methods=1
+
+[FORMAT]
+max-line-length=120

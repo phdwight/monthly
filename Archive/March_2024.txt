@@ -1,4 +1,0 @@
-March 2024:
-  Jack: Adjusted Percentage = 62.83%, Adjusted Reading = 1851, Water Amount = ₱139.66, Total = ₱3685.88
-  Ian: Adjusted Percentage = 23.19%, Adjusted Reading = 593, Water Amount = ₱139.66, Total = ₱2236.97
-  Ajin: Adjusted Percentage = 13.98%, Adjusted Reading = 301, Water Amount = ₱139.66, Total = ₱650.65
