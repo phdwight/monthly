@@ -1,11 +1,20 @@
 
+'May 2024':
+  readings:
+    Papa: 39399
+    Jack: 26003
+    Ian: 26460
+    Ajin: 10926
+  amount: 5734.76
+  water: 578.41
+  internet: 2000
 'April 2024':
   readings:
-    Papa: 38890
-    Jack: 23572
-    Ian: 24987
-    Ajin: 10636
-  amount: 4000
+    Papa: 38910
+    Jack: 23659
+    Ian: 25042
+    Ajin: 10646
+  amount: 4992.26
   water: 485.85
   internet: 2000
 'March 2024':
