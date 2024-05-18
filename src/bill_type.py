@@ -1,3 +1,18 @@
+"""
+This module defines the types of bills and their calculation strategies.
+
+It defines a BillType enum for different types of bills, and an abstract base class Bill for bills. The Bill class
+has a method calculate that must be overridden by subclasses to calculate the bill.
+
+The module also defines four concrete subclasses of Bill: TotalBill, WaterBill, InternetBill, and ElectricBill. Each
+of these classes overrides the calculate method to calculate the bill in a different way.
+
+The TotalBill class calculates the total bill by summing the other bills. The WaterBill and InternetBill classes
+calculate the bill by dividing the total bill amount by the number of shares. The ElectricBill class calculates the
+bill by dividing the total bill amount by the total consumption, and then adjusting the bill for each share based on
+an adjustment key.
+"""
+
 from enum import Enum
 from abc import ABC, abstractmethod
 
@@ -6,6 +21,7 @@ class BillType(Enum):
     """
     Enum class for different types of bills.
     """
+
     WATER = "water"
     INTERNET = "internet"
     ELECTRIC = "electric"
@@ -16,6 +32,7 @@ class Bill(ABC):
     """
     Abstract base class for a bill.
     """
+
     def __init__(self, bill_type: BillType, share_count, shared_keys):
         """
         Initialize a bill with its type, share count, and shared keys.
@@ -36,6 +53,7 @@ class TotalBill(Bill):
     """
     Class for the total bill.
     """
+
     def calculate(self, data, bill_obj):
         """
         Calculate the total bill.
@@ -48,6 +66,7 @@ class WaterBill(Bill):
     """
     Class for the water bill.
     """
+
     def calculate(self, data, bill_obj):
         """
         Calculate the water bill.
@@ -63,6 +82,7 @@ class InternetBill(Bill):
     """
     Class for the internet bill.
     """
+
     def calculate(self, data, bill_obj):
         """
         Calculate the internet bill.
@@ -78,6 +98,7 @@ class ElectricBill(Bill):
     """
     Class for the electric bill.
     """
+
     def __init__(self, bill_type: BillType, share_count, shared_keys, adjustment_key):
         """
         Initialize an electric bill with its type, share count, shared keys, and adjustment key.

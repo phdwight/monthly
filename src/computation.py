@@ -1,6 +1,18 @@
+"""
+This module calculates and outputs bills.
+
+It defines a BillCalculator class that reads bill data from a YAML file, calculates the bills, and outputs them.
+The calculation is done by instances of subclasses of the BillType class, which are passed to the BillCalculator
+when it's created. The output is done by instances of subclasses of the OutputStrategy class, which are passed to
+the BillCalculator's output_bill method.
+
+The module also defines some constants for shared keys in the bill data, and creates some bill and output strategy
+instances for testing purposes.
+"""
+
 import yaml
 
-from bill_type import BillType, Bill, WaterBill, InternetBill, ElectricBill, TotalBill
+from bill_type import BillType, WaterBill, InternetBill, ElectricBill, TotalBill
 from output_strategy import OutputStrategy, TableOutputStrategy, CSVOutputStrategy
 
 
@@ -8,6 +20,7 @@ class BillCalculator:
     """
     Class for calculating bills.
     """
+
     def __init__(self, filename, bills):
         """
         Initialize the bill calculator with a filename and a list of bills.
@@ -20,7 +33,7 @@ class BillCalculator:
         """
         Read a YAML file and return its data.
         """
-        with open(filename, "r") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
         return data
 

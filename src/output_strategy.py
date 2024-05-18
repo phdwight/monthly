@@ -1,24 +1,32 @@
+"""
+This module defines strategies for outputting bill data. It includes an abstract base class, OutputStrategy,
+and two concrete strategies, TableOutputStrategy and CSVOutputStrategy. TableOutputStrategy outputs the bill data
+as a table in the console, while CSVOutputStrategy writes the bill data to a CSV file.
+"""
+
 import csv
 
 from abc import ABC, abstractmethod
 from prettytable import PrettyTable
 
+
 class OutputStrategy(ABC):
     """
     Abstract base class for output strategies.
     """
+
     @abstractmethod
     def output(self, bill_obj):
         """
         Abstract method to output a bill object.
         """
-        pass
 
 
 class TableOutputStrategy(OutputStrategy):
     """
     Class for outputting a bill object as a table.
     """
+
     def output(self, bill_obj):
         """
         Output the bill object as a table.
@@ -47,12 +55,12 @@ class TableOutputStrategy(OutputStrategy):
         """
         return [
             "Total",
-            round(sum([value[0] for value in bill_obj.values()]), 2),
-            round(sum([value[1] for value in bill_obj.values()]), 2),
-            round(sum([value[2] for value in bill_obj.values()]), 2),
-            round(sum([value[3] for value in bill_obj.values()]), 2),
-            round(sum([value[4] for value in bill_obj.values()]), 2),
-            round(sum([value[5] for value in bill_obj.values()]), 2),
+            round(sum(value[0] for value in bill_obj.values()), 2),
+            round(sum(value[1] for value in bill_obj.values()), 2),
+            round(sum(value[2] for value in bill_obj.values()), 2),
+            round(sum(value[3] for value in bill_obj.values()), 2),
+            round(sum(value[4] for value in bill_obj.values()), 2),
+            round(sum(value[5] for value in bill_obj.values()), 2),
         ]
 
 
@@ -60,6 +68,7 @@ class CSVOutputStrategy(OutputStrategy):
     """
     Class for outputting a bill object as a CSV file.
     """
+
     def __init__(self, filename):
         """
         Initialize the CSV output strategy with a filename.
@@ -95,10 +104,10 @@ class CSVOutputStrategy(OutputStrategy):
         """
         return [
             "Total",
-            round(sum([value[0] for value in bill_obj.values()]), 2),
-            round(sum([value[1] for value in bill_obj.values()]), 2),
-            round(sum([value[2] for value in bill_obj.values()]), 2),
-            round(sum([value[3] for value in bill_obj.values()]), 2),
-            round(sum([value[4] for value in bill_obj.values()]), 2),
-            round(sum([value[5] for value in bill_obj.values()]), 2),
+            round(sum(value[0] for value in bill_obj.values()), 2),
+            round(sum(value[1] for value in bill_obj.values()), 2),
+            round(sum(value[2] for value in bill_obj.values()), 2),
+            round(sum(value[3] for value in bill_obj.values()), 2),
+            round(sum(value[4] for value in bill_obj.values()), 2),
+            round(sum(value[5] for value in bill_obj.values()), 2),
         ]
