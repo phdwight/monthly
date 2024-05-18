@@ -79,7 +79,7 @@ class CSVOutputStrategy(OutputStrategy):
         """
         Output the bill object as a CSV file.
         """
-        with open(self.filename, "w", newline="") as file:
+        with open(self.filename, "w", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
             writer.writerow(
                 [
