@@ -1,4 +1,4 @@
-'May 2024':
+- month: 'May 2024'
   readings:
     Papa: 39399
     Jack: 26003
@@ -7,7 +7,7 @@
   electric: 5734.76
   water: 578.41
   internet: 2000
-'April 2024':
+- month: 'April 2024'
   readings:
     Papa: 38910
     Jack: 23659
@@ -15,4 +15,13 @@
     Ajin: 10646
   electric: 4992.26
   water: 485.85
+  internet: 2000
+- month: 'March 2024'
+  readings:
+    Papa: 38372
+    Jack: 21389
+    Ian: 23576
+    Ajin: 10330
+  electric: 3654.53
+  water: 418.97
   internet: 2000
