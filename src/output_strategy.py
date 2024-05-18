@@ -4,13 +4,25 @@ from abc import ABC, abstractmethod
 from prettytable import PrettyTable
 
 class OutputStrategy(ABC):
+    """
+    Abstract base class for output strategies.
+    """
     @abstractmethod
     def output(self, bill_obj):
+        """
+        Abstract method to output a bill object.
+        """
         pass
 
 
 class TableOutputStrategy(OutputStrategy):
+    """
+    Class for outputting a bill object as a table.
+    """
     def output(self, bill_obj):
+        """
+        Output the bill object as a table.
+        """
         table = PrettyTable()
         table.field_names = [
             "Name",
@@ -30,6 +42,9 @@ class TableOutputStrategy(OutputStrategy):
         print(table)
 
     def generate_total_row(self, bill_obj):
+        """
+        Generate a total row for the table.
+        """
         return [
             "Total",
             round(sum([value[0] for value in bill_obj.values()]), 2),
@@ -42,10 +57,19 @@ class TableOutputStrategy(OutputStrategy):
 
 
 class CSVOutputStrategy(OutputStrategy):
+    """
+    Class for outputting a bill object as a CSV file.
+    """
     def __init__(self, filename):
+        """
+        Initialize the CSV output strategy with a filename.
+        """
         self.filename = filename
 
     def output(self, bill_obj):
+        """
+        Output the bill object as a CSV file.
+        """
         with open(self.filename, "w", newline="") as file:
             writer = csv.writer(file)
             writer.writerow(
@@ -66,6 +90,9 @@ class CSVOutputStrategy(OutputStrategy):
             writer.writerow(self.generate_total_row(bill_obj))
 
     def generate_total_row(self, bill_obj):
+        """
+        Generate a total row for the CSV file.
+        """
         return [
             "Total",
             round(sum([value[0] for value in bill_obj.values()]), 2),

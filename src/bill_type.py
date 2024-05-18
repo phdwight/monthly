@@ -3,6 +3,9 @@ from abc import ABC, abstractmethod
 
 
 class BillType(Enum):
+    """
+    Enum class for different types of bills.
+    """
     WATER = "water"
     INTERNET = "internet"
     ELECTRIC = "electric"
@@ -10,24 +13,45 @@ class BillType(Enum):
 
 
 class Bill(ABC):
+    """
+    Abstract base class for a bill.
+    """
     def __init__(self, bill_type: BillType, share_count, shared_keys):
+        """
+        Initialize a bill with its type, share count, and shared keys.
+        """
         self.bill_type = bill_type
         self.share_count = share_count
         self.shared_keys = shared_keys
 
     @abstractmethod
     def calculate(self, data, bill_obj):
+        """
+        Abstract method to calculate the bill.
+        """
         pass
 
 
 class TotalBill(Bill):
+    """
+    Class for the total bill.
+    """
     def calculate(self, data, bill_obj):
+        """
+        Calculate the total bill.
+        """
         for key in bill_obj:
             bill_obj[key].append(bill_obj[key][2] + bill_obj[key][3] + bill_obj[key][4])
 
 
 class WaterBill(Bill):
+    """
+    Class for the water bill.
+    """
     def calculate(self, data, bill_obj):
+        """
+        Calculate the water bill.
+        """
         bill_amount = data[0][self.bill_type.value]
         bill_share = round(bill_amount / self.share_count, 3)
 
@@ -36,7 +60,13 @@ class WaterBill(Bill):
 
 
 class InternetBill(Bill):
+    """
+    Class for the internet bill.
+    """
     def calculate(self, data, bill_obj):
+        """
+        Calculate the internet bill.
+        """
         bill_amount = data[0][self.bill_type.value]
         bill_share = round(bill_amount / self.share_count, 3)
 
@@ -45,11 +75,20 @@ class InternetBill(Bill):
 
 
 class ElectricBill(Bill):
+    """
+    Class for the electric bill.
+    """
     def __init__(self, bill_type: BillType, share_count, shared_keys, adjustment_key):
+        """
+        Initialize an electric bill with its type, share count, shared keys, and adjustment key.
+        """
         super().__init__(bill_type, share_count, shared_keys)
         self.adjustment_key = adjustment_key
 
     def calculate(self, data, bill_obj):
+        """
+        Calculate the electric bill.
+        """
         # Compute monthly consumption
         electric = {}
         if len(data) < 2:
