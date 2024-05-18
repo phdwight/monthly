@@ -21,12 +21,12 @@ class BillCalculator:
     Class for calculating bills.
     """
 
-    def __init__(self, filename, bills):
+    def __init__(self, filename, bill_type):
         """
         Initialize the bill calculator with a filename and a list of bills.
         """
         self.data = self.read_yaml_file(filename)
-        self.bills = bills
+        self.bills = bill_type
         self.bill_obj = {}
 
     def read_yaml_file(self, filename):
