@@ -16,3 +16,12 @@
   electric: 4992.26
   water: 485.85
   internet: 2000
+- month: 'March 2024'
+  readings:
+    Papa: 38372
+    Jack: 21389
+    Ian: 23576
+    Ajin: 10330
+  electric: 3654.53
+  water: 418.97
+  internet: 2000
