@@ -59,8 +59,62 @@ class BillCalculator:
     def display_table(self):
         print(self.table)  # print table
 
+    def compute_individual_payments(self):
+        individual_payments = {}
+        current_electric = self.data[self.months[-1]]["electric"]
+        total_consumption = sum([data["consumption"] for data in self.individual_amounts.values()])
+        for person, data in self.individual_amounts.items():
+            consumption = data["consumption"]
+            percentage = consumption / total_consumption
+            payment = current_electric * percentage
+            individual_payments[person] = round(payment, 3)
+        return individual_payments
+
+    def create_payment_table(self):
+        self.payment_table = PrettyTable()
+        self.payment_table.title = 'Electricity Payments'
+        self.payment_table.field_names = ["Person", "Payment"]
+        self.payment_table.align = "l"  # align columns to the left
+        for person, payment in self.compute_individual_payments().items():
+            self.payment_table.add_row([person, payment])
+        self.payment_table.hrules = ALL  # add horizontal lines between rows
+
+    def display_payment_table(self):
+        print(self.payment_table)  # print table
+
+    def redistribute_payment(self):
+        individual_payments = self.compute_individual_payments()
+        if "Papa" not in individual_payments:
+            return individual_payments
+
+        num_other_people = len(individual_payments) - 1
+        redistributed_amount = individual_payments["Papa"] / num_other_people
+        for person in individual_payments:
+            if person != "Papa":
+                individual_payments[person] += redistributed_amount
+        individual_payments["Papa"] = 0
+
+        return individual_payments
+    
+    def create_redistributed_payment_table(self):
+        self.redistributed_payment_table = PrettyTable()
+        self.redistributed_payment_table.title = 'Redistributed Electricity Payments'
+        self.redistributed_payment_table.field_names = ["Person", "Redistributed Payment"]
+        self.redistributed_payment_table.align = "l"  # align columns to the left
+        redistributed_payments = self.redistribute_payment()
+        for person, payment in redistributed_payments.items():
+            self.redistributed_payment_table.add_row([person, round(payment, 3)])
+        self.redistributed_payment_table.hrules = ALL  # add horizontal lines between rows
+
+    def display_redistributed_payment_table(self):
+        print(self.redistributed_payment_table)  # print table
+
+# usage
 calculator = BillCalculator("src/bills.yaml")
-individual_amounts = calculator.compute_individual_amounts()
+calculator.compute_individual_amounts()
 calculator.create_table()
 calculator.display_table()
-print(individual_amounts)
+calculator.create_payment_table()
+calculator.display_payment_table()
+calculator.create_redistributed_payment_table()
+calculator.display_redistributed_payment_table()
