@@ -46,7 +46,6 @@ class Bill(ABC):
         """
         Abstract method to calculate the bill.
         """
-        pass
 
 
 class TotalBill(Bill):
