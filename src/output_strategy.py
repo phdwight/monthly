@@ -34,7 +34,7 @@ class TableOutputStrategy(OutputStrategy):
         table = PrettyTable()
         table.field_names = [
             "Name",
-            "Veco Reading",
+            "Veco",
             "Electric Amount",
             "Electric Adjusted",
             "Water",
@@ -84,7 +84,7 @@ class CSVOutputStrategy(OutputStrategy):
             writer.writerow(
                 [
                     "Name",
-                    "Veco Reading",
+                    "Veco",
                     "Electric Amount",
                     "Electric Adjusted",
                     "Water",

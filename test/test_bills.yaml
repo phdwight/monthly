@@ -1,0 +1,18 @@
+- month: 'May 2024'
+  readings:
+    Papa: 100
+    Jack: 2000
+    Ian: 1500
+    Ajin: 500
+  electric: 3000.50
+  water: 400.75
+  internet: 2000
+- month: 'April 2024'
+  readings:
+    Papa: 50
+    Jack: 500
+    Ian: 300
+    Ajin: 50
+  electric: 200.25
+  water: 300.99
+  internet: 2000
