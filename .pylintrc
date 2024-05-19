@@ -3,3 +3,6 @@ min-public-methods=1
 
 [FORMAT]
 max-line-length=120
+
+[MASTER]
+ignore-patterns=test_.*\.py
