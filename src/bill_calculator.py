@@ -12,8 +12,7 @@ instances for testing purposes.
 
 import yaml
 
-from bill_type import BillType, WaterBill, InternetBill, ElectricBill, TotalBill
-from output_strategy import OutputStrategy, TableOutputStrategy, CSVOutputStrategy
+from .output_strategy import OutputStrategy
 
 
 class BillCalculator:
@@ -49,20 +48,3 @@ class BillCalculator:
         Output the bill using a given output strategy.
         """
         strategy.output(self.bill_obj)
-
-
-WATER_SHARED_KEYS = ["Jack", "Ian", "Ajin"]
-INTERNET_SHARED_KEYS = ["Jack", "Ian"]
-ELECTRIC_SHARED_KEYS = ["Jack", "Ian", "Ajin", "Papa"]
-
-bills = [
-    ElectricBill(BillType.ELECTRIC, 3, ELECTRIC_SHARED_KEYS, "Papa"),
-    WaterBill(BillType.WATER, 3, WATER_SHARED_KEYS),
-    InternetBill(BillType.INTERNET, 2, INTERNET_SHARED_KEYS),
-    TotalBill(BillType.TOTAL, 3, ELECTRIC_SHARED_KEYS),
-]
-
-calculator = BillCalculator("src/bills.yaml", bills)
-calculator.calculate()
-calculator.output_bill(TableOutputStrategy())
-calculator.output_bill(CSVOutputStrategy(f"v2/{calculator.data[0]['month']}.csv"))
