@@ -1,3 +1,12 @@
+- month: 'June 2024'
+  readings:
+    Papa: 39863
+    Jack: 28228
+    Ian: 28263
+    Ajin: 11219
+  electric: 4740.75
+  water: 484.44
+  internet: 2100
 - month: 'May 2024'
   readings:
     Papa: 39399
