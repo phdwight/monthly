@@ -99,7 +99,7 @@ class TestOutput:
             ajin_total = jmespath.search("[?Name=='Ajin'].Total | [0]", data)
 
             # Check the value of 'Total' for 'Ian'
-            assert ian_total == "2274.3990000000003", "Incorrect total for Ian"
+            assert ian_total == "2274.399", "Incorrect total for Ian"
             assert papa_total == "0.0", "Incorrect total for Papa"
             assert jack_total == "2555.695", "Incorrect total for Jack"
             assert ajin_total == "571.156", "Incorrect total for Ajin"

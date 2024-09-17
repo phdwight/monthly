@@ -58,7 +58,7 @@ class TotalBill(Bill):
         Calculate the total bill.
         """
         for key in bill_obj:
-            bill_obj[key].append(bill_obj[key][2] + bill_obj[key][3] + bill_obj[key][4])
+            bill_obj[key].append(round(bill_obj[key][2] + bill_obj[key][3] + bill_obj[key][4],3))
 
 
 class WaterBill(Bill):
