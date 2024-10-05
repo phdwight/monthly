@@ -115,34 +115,52 @@ class ElectricBill(Bill):
         """
         Calculate the electric bill.
         """
-        # Compute monthly consumption
-        electric = {}
+        # Ensure there are at least 2 data entries
         if len(data) < 2:
-            print("There should be at least 2 data entries")
+            print("Error: There should be at least 2 data entries")
             return
 
-        for key in data[0]["readings"]:
-            electric[key] = [data[0]["readings"][key] - data[1]["readings"][key]]
-
+        # Compute monthly consumption
+        electric = self.compute_monthly_consumption(data)
         bill_obj.update(electric)
 
-        # Compute monthly electric
+        # Compute monthly electric amounts
         electric_amount = data[0][self.bill_type.value]
         electric_kw_total = sum(value[0] for value in bill_obj.values())
+        self.compute_monthly_electric(bill_obj, electric_amount, electric_kw_total)
 
+        # Adjust monthly electric amounts
+        self.adjust_monthly_electric(bill_obj)
+
+    def compute_monthly_consumption(self, data):
+        """
+        Compute the monthly consumption based on the readings.
+        """
+        electric = {}
+        for key in data[0]["readings"]:
+            electric[key] = [data[0]["readings"][key] - data[1]["readings"][key]]
+        return electric
+
+    def compute_monthly_electric(self, bill_obj, electric_amount, electric_kw_total):
+        """
+        Compute the monthly electric amounts for each participant.
+        """
         for key in bill_obj:
             consumption = bill_obj[key][0] / electric_kw_total
             due = round(electric_amount * consumption, 3)
             bill_obj[key].append(due)
 
-        # Adjust monthly electric
+    def adjust_monthly_electric(self, bill_obj):
+        """
+        Adjust the monthly electric amounts based on the threshold and adjustment key.
+        """
         adjustment_amount = bill_obj[self.adjustment_key][1]  # Papa's bill
         additional_amount = max(0, adjustment_amount - self.threshold["amount"])
         distributable_amount = min(adjustment_amount, self.threshold["amount"])
 
         # Calculate the amount to share among the participants
         amount_to_share = round(distributable_amount / self.share_count, 3)
-        print(f"amount to share: {amount_to_share}")
+        print(f"Amount to share: {amount_to_share}")
 
         # Adjust the bill for each participant
         for key in bill_obj:
