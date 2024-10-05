@@ -100,7 +100,7 @@ class ElectricBill(Bill):
     Class for the electric bill.
     """
 
-    # pylint: disable=R0913
+    # pylint: disable=R0913,R0917
     def __init__(
         self, bill_type: BillType, share_count, shared_keys, adjustment_key, threshold
     ):
