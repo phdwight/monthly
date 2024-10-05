@@ -11,3 +11,4 @@ src/__pycache__/output_strategy.cpython-312.pyc
 test/__pycache__/__init__.cpython-312.pyc
 test/__pycache__/test_output.cpython-312-pytest-8.2.0.pyc
 *.pyc
+*.pyc
