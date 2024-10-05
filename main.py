@@ -82,6 +82,7 @@ def calculate_and_output_bills(file_path: str) -> None:
     """
     Calculate and output bills using the provided file path.
     """
+    # pylint: disable=W0718, W1203
     try:
         calculator = BillCalculator(file_path, bills)
         calculator.calculate()
