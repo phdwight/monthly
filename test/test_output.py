@@ -30,6 +30,7 @@ WATER_SHARED_KEYS = ["Jack", "Ian", "Ajin"]
 INTERNET_SHARED_KEYS = ["Jack", "Ian"]
 ELECTRIC_SHARED_KEYS = ["Jack", "Ian", "Ajin", "Papa"]
 
+ELECTRIC_THRESHOLD = {"amount": 500, "key": "Ian"}
 
 @pytest.fixture
 def bills_calculator():
@@ -41,7 +42,7 @@ def bills_calculator():
     """
 
     bills = [
-        ElectricBill(BillType.ELECTRIC, 3, ELECTRIC_SHARED_KEYS, "Papa"),
+        ElectricBill(BillType.ELECTRIC, 3, ELECTRIC_SHARED_KEYS, "Papa", ELECTRIC_THRESHOLD),
         WaterBill(BillType.WATER, 3, WATER_SHARED_KEYS),
         InternetBill(BillType.INTERNET, 2, INTERNET_SHARED_KEYS),
         TotalBill(BillType.TOTAL, 3, ELECTRIC_SHARED_KEYS),
@@ -99,10 +100,11 @@ class TestOutput:
             ajin_total = jmespath.search("[?Name=='Ajin'].Total | [0]", data)
 
             # Check the value of 'Total' for 'Ian'
-            assert ian_total == "2274.399", "Incorrect total for Ian"
+            print(ian_total)
+            assert ian_total == "2261.019", "Incorrect total for Ian"
             assert papa_total == "0.0", "Incorrect total for Papa"
-            assert jack_total == "2555.695", "Incorrect total for Jack"
-            assert ajin_total == "571.156", "Incorrect total for Ajin"
+            assert jack_total == "2484.658", "Incorrect total for Jack"
+            assert ajin_total == "655.572", "Incorrect total for Ajin"
 
     def test_output_reading(
         self, bills_calculator
@@ -132,6 +134,6 @@ class TestOutput:
 
             # Check the value of 'Total' for 'Ian'
             assert ian_veco == "1200", "Incorrect veco for Ian"
-            assert papa_veco == "50", "Incorrect  veco for Papa"
+            assert papa_veco == "650", "Incorrect  veco for Papa"
             assert jack_veco == "1500", "Incorrect veco for Jack"
             assert ajin_veco == "450", "Incorrect veco for Ajin"

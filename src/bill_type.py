@@ -58,7 +58,9 @@ class TotalBill(Bill):
         Calculate the total bill.
         """
         for key in bill_obj:
-            bill_obj[key].append(round(bill_obj[key][2] + bill_obj[key][3] + bill_obj[key][4],3))
+            bill_obj[key].append(
+                round(bill_obj[key][2] + bill_obj[key][3] + bill_obj[key][4], 3)
+            )
 
 
 class WaterBill(Bill):
@@ -98,12 +100,15 @@ class ElectricBill(Bill):
     Class for the electric bill.
     """
 
-    def __init__(self, bill_type: BillType, share_count, shared_keys, adjustment_key):
+    def __init__(
+        self, bill_type: BillType, share_count, shared_keys, adjustment_key, threshold
+    ):
         """
         Initialize an electric bill with its type, share count, shared keys, and adjustment key.
         """
         super().__init__(bill_type, share_count, shared_keys)
         self.adjustment_key = adjustment_key
+        self.threshold = threshold  # amount to be shared, and the rest to be adjusted
 
     def calculate(self, data, bill_obj):
         """
@@ -130,13 +135,22 @@ class ElectricBill(Bill):
             bill_obj[key].append(due)
 
         # Adjust monthly electric
-        adjustment_amount = bill_obj[self.adjustment_key][1]
-        amount_to_share = round(adjustment_amount / self.share_count, 3)
+        adjustment_amount = bill_obj[self.adjustment_key][1]  # Papa's bill
+        additional_amount = max(0, adjustment_amount - self.threshold["amount"])
+        distributable_amount = min(adjustment_amount, self.threshold["amount"])
 
+        # Calculate the amount to share among the participants
+        amount_to_share = round(distributable_amount / self.share_count, 3)
+        print(f"amount to share: {amount_to_share}")
+
+        # Adjust the bill for each participant
         for key in bill_obj:
-            adjustment = (
-                amount_to_share
-                if key != self.adjustment_key
-                else (adjustment_amount * -1)
-            )
+            if key == self.adjustment_key:
+                adjustment = -adjustment_amount
+            else:
+                adjustment = amount_to_share
+
+            if key == self.threshold["key"]:
+                adjustment += additional_amount
+
             bill_obj[key].append(round(adjustment + bill_obj[key][1], 3))
