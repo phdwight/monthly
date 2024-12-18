@@ -26,7 +26,7 @@ This project is a bill calculator that processes various types of bills and outp
 
 To run the main application, execute the following command:
 ```sh
-python [main.py](http://_vscodecontentref_/#%7B%22uri%22%3A%7B%22%24mid%22%3A1%2C%22path%22%3A%22%2Fusr%2Fsrc%2Fapp%2Fmain.py%22%2C%22scheme%22%3A%22vscode-remote%22%2C%22authority%22%3A%22attached-container%2B7b22636f6e7461696e65724e616d65223a222f707974686f6e5f6170705f6d6f6e74686c79222c2273657474696e6773223a226465736b746f702d6c696e7578227d7d%22%7D%7D)
+python main.py --file-path src/bills.yaml 
 ```
 
 .coverage
