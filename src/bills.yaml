@@ -1,3 +1,12 @@
+- month: 'January 2025'
+  readings:
+    Papa: 42389
+    Jack: 41804
+    Ian: 37374
+    Ajin: 13382
+  electric: 3672.35
+  water: 730.90
+  internet: 2100
 - month: 'December 2024'
   readings:
     Papa: 42195
@@ -7,84 +16,3 @@
   electric: 4270.02
   water: 664.73
   internet: 2100
-- month: 'November 2024'
-  readings:
-    Papa: 42052
-    Jack: 38018
-    Ian: 34645
-    Ajin: 12806
-  electric: 3975.04
-  water: 625.84
-  internet: 2100
-- month: 'October 2024'
-  readings:
-    Papa: 41738
-    Jack: 35875
-    Ian: 33985
-    Ajin: 12479
-  electric: 4919.90
-  water: 622.57
-  internet: 2100
-- month: 'September 2024'
-  readings:
-    Papa: 41246
-    Jack: 33837
-    Ian: 32534
-    Ajin: 12226
-  electric: 6282.4
-  water: 679.22
-  internet: 2100
-- month: 'August 2024'
-  readings:
-    Papa: 40804
-    Jack: 31918
-    Ian: 30637
-    Ajin: 11902
-  electric: 4532.46
-  water: 537.95
-  internet: 2100
-- month: 'July 2024'
-  readings:
-    Papa: 40374
-    Jack: 29929
-    Ian: 29810
-    Ajin: 11541
-  electric: 5414.23
-  water: 485.94
-  internet: 2100
-- month: 'June 2024'
-  readings:
-    Papa: 39863
-    Jack: 28228
-    Ian: 28263
-    Ajin: 11219
-  electric: 4740.75
-  water: 484.44
-  internet: 2100
-- month: 'May 2024'
-  readings:
-    Papa: 39399
-    Jack: 26003
-    Ian: 26460
-    Ajin: 10926
-  electric: 5734.76
-  water: 578.41
-  internet: 2000
-- month: 'April 2024'
-  readings:
-    Papa: 38910
-    Jack: 23659
-    Ian: 25042
-    Ajin: 10646
-  electric: 4992.26
-  water: 485.85
-  internet: 2000
-- month: 'March 2024'
-  readings:
-    Papa: 38372
-    Jack: 21389
-    Ian: 23576
-    Ajin: 10330
-  electric: 3654.53
-  water: 418.97
-  internet: 2000
