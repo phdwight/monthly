@@ -2,10 +2,10 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   pull_request:
     # The branches below must match those listed in the `push` event above.
-    branches: [ "main", "develop" ]
+    branches: [ "main"]
   schedule:
     - cron: '0 0 * * 0'
 
