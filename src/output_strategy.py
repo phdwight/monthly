@@ -21,6 +21,25 @@ class OutputStrategy(ABC):
         Abstract method to output a bill object.
         """
 
+    @staticmethod
+    def generate_total_row(bill_obj):
+        """
+        Generate a total row for the output.
+
+        Returns:
+            list: The first element is the label string ("Total"), and each subsequent element is the sum of the
+            corresponding column in the bill_obj values, rounded to 2 decimal places. The order of columns matches
+            the order in the bill_obj value lists.
+        """
+        if not bill_obj:
+            return ["Total"]
+        columns = list(zip(*bill_obj.values()))
+        totals = [
+            round(sum(col), 2)
+            for col in columns
+        ]
+        return ["Total"] + totals
+
 
 class TableOutputStrategy(OutputStrategy):
     """
@@ -45,23 +64,9 @@ class TableOutputStrategy(OutputStrategy):
         for key, values in bill_obj.items():
             table.add_row([key] + values)
 
-        table.add_row(self.generate_total_row(bill_obj))
+        table.add_row(OutputStrategy.generate_total_row(bill_obj))
 
         print(table)
-
-    def generate_total_row(self, bill_obj):
-        """
-        Generate a total row for the table.
-        """
-        return [
-            "Total",
-            round(sum(value[0] for value in bill_obj.values()), 2),
-            round(sum(value[1] for value in bill_obj.values()), 2),
-            round(sum(value[2] for value in bill_obj.values()), 2),
-            round(sum(value[3] for value in bill_obj.values()), 2),
-            round(sum(value[4] for value in bill_obj.values()), 2),
-            round(sum(value[5] for value in bill_obj.values()), 2),
-        ]
 
 
 class CSVOutputStrategy(OutputStrategy):
@@ -96,18 +101,4 @@ class CSVOutputStrategy(OutputStrategy):
             for key, values in bill_obj.items():
                 writer.writerow([key] + values)
 
-            writer.writerow(self.generate_total_row(bill_obj))
-
-    def generate_total_row(self, bill_obj):
-        """
-        Generate a total row for the CSV file.
-        """
-        return [
-            "Total",
-            round(sum(value[0] for value in bill_obj.values()), 2),
-            round(sum(value[1] for value in bill_obj.values()), 2),
-            round(sum(value[2] for value in bill_obj.values()), 2),
-            round(sum(value[3] for value in bill_obj.values()), 2),
-            round(sum(value[4] for value in bill_obj.values()), 2),
-            round(sum(value[5] for value in bill_obj.values()), 2),
-        ]
+            writer.writerow(OutputStrategy.generate_total_row(bill_obj))
