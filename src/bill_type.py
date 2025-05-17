@@ -149,7 +149,11 @@ class ElectricBill(Bill):
         if electric_kw_total == 0:
             # Avoid division by zero: assign zero to all
             for key in bill_obj:
-                bill_obj[key].append(0)
+                # Ensure the list is padded to the expected index (e.g., 1)
+                while len(bill_obj[key]) <= 1:
+                    bill_obj[key].append(0)
+                # Set the value at the expected index
+                bill_obj[key][1] = 0
             return
         for key in bill_obj:
             consumption = bill_obj[key][0] / electric_kw_total
