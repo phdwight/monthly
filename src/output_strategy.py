@@ -21,6 +21,21 @@ class OutputStrategy(ABC):
         Abstract method to output a bill object.
         """
 
+    @staticmethod
+    def generate_total_row(bill_obj):
+        """
+        Generate a total row for the output.
+        """
+        return [
+            "Total",
+            round(sum(value[0] for value in bill_obj.values()), 2),
+            round(sum(value[1] for value in bill_obj.values()), 2),
+            round(sum(value[2] for value in bill_obj.values()), 2),
+            round(sum(value[3] for value in bill_obj.values()), 2),
+            round(sum(value[4] for value in bill_obj.values()), 2),
+            round(sum(value[5] for value in bill_obj.values()), 2),
+        ]
+
 
 class TableOutputStrategy(OutputStrategy):
     """
@@ -50,18 +65,7 @@ class TableOutputStrategy(OutputStrategy):
         print(table)
 
     def generate_total_row(self, bill_obj):
-        """
-        Generate a total row for the table.
-        """
-        return [
-            "Total",
-            round(sum(value[0] for value in bill_obj.values()), 2),
-            round(sum(value[1] for value in bill_obj.values()), 2),
-            round(sum(value[2] for value in bill_obj.values()), 2),
-            round(sum(value[3] for value in bill_obj.values()), 2),
-            round(sum(value[4] for value in bill_obj.values()), 2),
-            round(sum(value[5] for value in bill_obj.values()), 2),
-        ]
+        return OutputStrategy.generate_total_row(bill_obj)
 
 
 class CSVOutputStrategy(OutputStrategy):
@@ -99,15 +103,4 @@ class CSVOutputStrategy(OutputStrategy):
             writer.writerow(self.generate_total_row(bill_obj))
 
     def generate_total_row(self, bill_obj):
-        """
-        Generate a total row for the CSV file.
-        """
-        return [
-            "Total",
-            round(sum(value[0] for value in bill_obj.values()), 2),
-            round(sum(value[1] for value in bill_obj.values()), 2),
-            round(sum(value[2] for value in bill_obj.values()), 2),
-            round(sum(value[3] for value in bill_obj.values()), 2),
-            round(sum(value[4] for value in bill_obj.values()), 2),
-            round(sum(value[5] for value in bill_obj.values()), 2),
-        ]
+        return OutputStrategy.generate_total_row(bill_obj)
