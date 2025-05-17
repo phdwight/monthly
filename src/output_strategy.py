@@ -25,16 +25,15 @@ class OutputStrategy(ABC):
     def generate_total_row(bill_obj):
         """
         Generate a total row for the output.
+
+        Returns:
+            list: The first element is the label string ("Total"), and each subsequent element is the sum of the corresponding column in the bill_obj values, rounded to 2 decimal places. The order of columns matches the order in the bill_obj value lists.
         """
-        return [
-            "Total",
-            round(sum(value[0] for value in bill_obj.values()), 2),
-            round(sum(value[1] for value in bill_obj.values()), 2),
-            round(sum(value[2] for value in bill_obj.values()), 2),
-            round(sum(value[3] for value in bill_obj.values()), 2),
-            round(sum(value[4] for value in bill_obj.values()), 2),
-            round(sum(value[5] for value in bill_obj.values()), 2),
-        ]
+        if not bill_obj:
+            return ["Total"]
+        columns = list(zip(*bill_obj.values()))
+        totals = [round(sum(col), 2) for col in columns]
+        return ["Total"] + totals
 
 
 class TableOutputStrategy(OutputStrategy):
