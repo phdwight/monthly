@@ -60,12 +60,9 @@ class TableOutputStrategy(OutputStrategy):
         for key, values in bill_obj.items():
             table.add_row([key] + values)
 
-        table.add_row(self.generate_total_row(bill_obj))
+        table.add_row(OutputStrategy.generate_total_row(bill_obj))
 
         print(table)
-
-    def generate_total_row(self, bill_obj):
-        return OutputStrategy.generate_total_row(bill_obj)
 
 
 class CSVOutputStrategy(OutputStrategy):
@@ -100,7 +97,4 @@ class CSVOutputStrategy(OutputStrategy):
             for key, values in bill_obj.items():
                 writer.writerow([key] + values)
 
-            writer.writerow(self.generate_total_row(bill_obj))
-
-    def generate_total_row(self, bill_obj):
-        return OutputStrategy.generate_total_row(bill_obj)
+            writer.writerow(OutputStrategy.generate_total_row(bill_obj))
