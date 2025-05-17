@@ -27,13 +27,18 @@ class OutputStrategy(ABC):
         Generate a total row for the output.
 
         Returns:
-            list: The first element is the label string ("Total"), and each subsequent element is the sum of the corresponding column in the bill_obj values, rounded to 2 decimal places. The order of columns matches the order in the bill_obj value lists.
+            list: The first element is the label string ("Total"), and each subsequent element is the sum of the corresponding column in the bill_obj values, rounded to 2 decimal places.
+            The order of columns matches the order in the bill_obj value lists.
         """
         if not bill_obj:
             return ["Total"]
         columns = list(zip(*bill_obj.values()))
         totals = [round(sum(col), 2) for col in columns]
-        return ["Total"] + totals
+        # Split the long line for readability and to avoid line-too-long warning
+        return [
+            "Total",
+            *totals
+        ]
 
 
 class TableOutputStrategy(OutputStrategy):
