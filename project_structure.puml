@@ -1,0 +1,40 @@
+@startuml
+' Project Structure for Monthly Bill Calculator
+package src {
+  class BillType <<enum>>
+  abstract class Bill {
+    +bill_type
+    +share_count
+    +shared_keys
+    +calculate()
+  }
+  class TotalBill
+  class WaterBill
+  class InternetBill
+  class ElectricBill
+  Bill <|-- TotalBill
+  Bill <|-- WaterBill
+  Bill <|-- InternetBill
+  Bill <|-- ElectricBill
+  BillType .. Bill
+  BillType .. TotalBill
+  BillType .. WaterBill
+  BillType .. InternetBill
+  BillType .. ElectricBill
+}
+package src as S {
+  class bill_calculator.py
+  class output_strategy.py
+}
+package test {
+  class test_output.py
+}
+package v2 {
+  class "*.csv" as CSV
+}
+' Relationships
+BillType ..> Bill
+Bill <.. bill_calculator.py : uses
+output_strategy.py ..> Bill : uses
+bill_calculator.py ..> output_strategy.py : uses
+@enduml
