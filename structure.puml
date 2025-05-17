@@ -1,0 +1,55 @@
+@startuml
+' PlantUML diagram for Bill Calculator project structure
+
+package "src" {
+  class BillCalculator {
+    +__init__(filename, bill_type)
+    +read_yaml_file(filename)
+    +calculate()
+    +output_bill(strategy)
+  }
+
+  abstract class Bill {
+    +__init__(bill_type, share_count, shared_keys)
+    +calculate(data, bill_obj)
+  }
+  enum BillType {
+    WATER
+    INTERNET
+    ELECTRIC
+    TOTAL
+  }
+  class WaterBill
+  class InternetBill
+  class ElectricBill
+  class TotalBill
+
+  Bill <|-- WaterBill
+  Bill <|-- InternetBill
+  Bill <|-- ElectricBill
+  Bill <|-- TotalBill
+
+  class OutputStrategy {
+    +output(bill_obj)
+  }
+  class TableOutputStrategy
+  class CSVOutputStrategy
+  OutputStrategy <|-- TableOutputStrategy
+  OutputStrategy <|-- CSVOutputStrategy
+
+  BillCalculator --> Bill
+  BillCalculator --> OutputStrategy
+}
+
+package "test" {
+  class test_output.py
+}
+
+package "v2 (output)" {
+  class "*.csv" as CSVFiles
+}
+
+BillCalculator --> "YAML file" : reads
+BillCalculator --> CSVFiles : writes
+
+@enduml

@@ -118,6 +118,13 @@ class ElectricBill(Bill):
         # Ensure there are at least 2 data entries
         if len(data) < 2:
             print("Error: There should be at least 2 data entries")
+            # Initialize bill_obj for all participants in readings
+            for key in data[0]["readings"]:
+                if key not in bill_obj:
+                    bill_obj[key] = [0]
+            # Pad to exactly 6 columns (Veco, Electric Amount, Electric Adjusted, Water, Internet, Total)
+            for key in bill_obj:
+                bill_obj[key] = (bill_obj[key][:6] + [0]*6)[:6]
             return
 
         # Compute monthly consumption
@@ -145,6 +152,11 @@ class ElectricBill(Bill):
         """
         Compute the monthly electric amounts for each participant.
         """
+        if electric_kw_total == 0:
+            # Avoid division by zero: assign zero to all
+            for key in bill_obj:
+                bill_obj[key].append(0)
+            return
         for key in bill_obj:
             consumption = bill_obj[key][0] / electric_kw_total
             due = round(electric_amount * consumption, 3)
